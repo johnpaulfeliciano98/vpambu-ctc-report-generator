@@ -1,0 +1,109 @@
+import re
+
+
+
+class CallTheCarTransformation:
+
+    def __init__(self, df):
+        self.df = df
+
+    def extract_wait_time_and_oxygen(self):
+        pattern = r"Wait time:\s*(\d+)\s*minutes(?:.*?\b(\d+)\s*(?:liter|liters|LPM|L|lts|LITERS|lt|l)\b)?"
+        comments = self.df["Origin Comments"]
+
+        for comment in comments:
+            comment = str(comment).replace("'", "").replace('"', "")
+            match = re.search(pattern, comment)
+            if match:
+                wait_time = int(match.group(1))
+                oxygen_match = match.group(2)
+                if oxygen_match:
+                    oxygen = int(oxygen_match)
+                elif any(
+                    word in comment
+                    for word in ["Therapist REQ", "Deep suction", "Vent"]
+                ):
+                    oxygen = None
+                else:
+                    oxygen = 0
+            else:
+                wait_time = 0
+                oxygen = 0
+
+            wait_time.append(wait_time)
+            oxygen.append(oxygen)
+
+        return wait_time, oxygen
+
+    def standardize_name(self) -> str:
+        standardized_names = self.df["Last Name"] + ", " + self.df["First Name"]
+        return standardized_names
+
+    def standardize_address(self):
+        standardized_addresses = (
+            self.df["Origin Street"]
+            + ", "
+            + self.df["Origin City"]
+            + ", "
+            + self.df["Origin State"]
+            + ", "
+            + self.df["Origin Postal"]
+        )
+        return standardized_addresses
+
+
+# Example usage:
+import pandas as pd
+
+# Sample DataFrame (assuming df contains all the columns)
+data = {
+    "Trip ID": [1, 2],
+    "First Name": ["john", "jane"],
+    "Last Name": ["doe", "smith"],
+    "Gender": ["M", "F"],
+    "LOS": [5, 7],
+    "Home Number": ["123", "456"],
+    "Date of Service": ["2024-05-15", "2024-05-16"],
+    "Appointment Time": ["10:00", "11:00"],
+    "Pickup Time": ["9:30", "10:30"],
+    "Request Type": ["type1", "type2"],
+    "Status": ["status1", "status2"],
+    "Origin Name": ["origin1", "origin2"],
+    "Origin Street": ["123 main st", "456 elm st"],
+    "Origin Suite": ["suite1", "suite2"],
+    "Origin City": ["anytown", "othertown"],
+    "Origin State": ["NY", "CA"],
+    "Origin Postal": ["12345", "67890"],
+    "Origin County": ["county1", "county2"],
+    "Origin Phone": ["111-111-1111", "222-222-2222"],
+    "Origin Comments": ["Wait time: 10 minutes, 5 L", "Wait time: 15 minutes, 7 L"],
+    "Destination Name": ["dest1", "dest2"],
+    "Destination Street": ["789 broadway", "321 pine st"],
+    "Destination Suite": ["suite3", "suite4"],
+    "Destination City": ["destinationtown1", "destinationtown2"],
+    "Destination State": ["CA", "NY"],
+    "Destination Postal": ["54321", "09876"],
+    "Destination County": ["county3", "county4"],
+    "Destination Phone": ["333-333-3333", "444-444-4444"],
+    "Destination Comments": ["comment1", "comment2"],
+    "Escorts": ["escort1", "escort2"],
+    "Type Of Trip": ["type_of_trip1", "type_of_trip2"],
+    "Miles": [10, 20],
+    "Member Unique Identifier": ["member1", "member2"],
+    "Date Of Birth": ["1980-01-01", "1975-02-02"],
+}
+
+df = pd.DataFrame(data)
+
+car_service = CallTheCarTransformation(df)
+wait_times, oxygens = car_service.extract_wait_time_and_oxygen()
+print("Wait times:", wait_times)
+print("Oxygen levels:", oxygens)
+
+standardized_names = car_service.standardize_name()
+print("Standardized Names:")
+print(standardized_names)
+
+standardized_addresses = car_service.standardize_address()
+print("Standardized Addresses:")
+print(standardized_addresses)
