@@ -1,5 +1,5 @@
 # ignore ALL files in ANY directory named import
-import/
+# import/
 
 # ignore ALL files in ANY directory named __pycache__
 __pycache__/
