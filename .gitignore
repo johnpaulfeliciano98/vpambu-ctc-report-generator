@@ -8,4 +8,7 @@ __pycache__/
 .vscode/
 
 # ignore ALL files in ANY directory named venv
-venv/
+venv_mac_os/
+
+# ignore ALL files in ANY directory named venv
+venv_windows/
