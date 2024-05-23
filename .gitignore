@@ -1,5 +1,6 @@
 # ignore ALL files in ANY directory named import
 # import/
+output/
 
 # ignore ALL files in ANY directory named __pycache__
 __pycache__/
@@ -8,7 +9,9 @@ __pycache__/
 .vscode/
 
 # ignore ALL files in ANY directory named venv
-venv_mac_os/
+# venv_mac_os/
 
 # ignore ALL files in ANY directory named venv
 venv_windows/
+
+venv/
