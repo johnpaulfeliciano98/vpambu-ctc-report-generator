@@ -22,8 +22,9 @@ def main():
     print(df['Origin Comments'].loc[df.index[0]])
 
     # Example how to access Origin Comments cell
-    # origin_comments = df['Origin Comments'].loc[df.index[0]]
-    # print(dt.extract_wait_time_and_oxygen(origin_comments))
+    # 
+    origin_comments = df['Origin Comments'].loc[df.index[0]]
+    print(dt.extract_wait_time_and_oxygen(origin_comments))
 
     # Run standardize_name and standardize_address
     # dt.process_csv_files("import/Download(via_Manifest)_16e15fa4-b454-4c30-8a76-2945bdff6d8c.csv")
