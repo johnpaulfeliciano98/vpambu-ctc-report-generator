@@ -1,12 +1,18 @@
+"""
+Handle data transformation for Call the Car manifest CSV files
+"""
+
+
+import os
 import re
 import pandas as pd
-import os
 
 def extract_wait_time_and_oxygen(comment):
     """
     Returns wait time and oxygen
     Receives comment
     """
+    # TODO: set origin comment to make lines 26 & 29 case insensitve without breaking regex pattern
     # Define the pattern to match
     pattern = r"Wait time:\s*(\d+)\s*minutes(?:.*?\b(\d+)\s*(?:liter|liters|LPM|L|lts|LITERS|lt|l)\b)?"
 
@@ -77,7 +83,7 @@ def standardize_name(file_path):
     else:
         print("Columns 'First Name' and 'Last Name' are not found in the CSV file.")
         # run stderror
-        # TODO: CHANGE TO ERROR HANDLING 
+        # TODO: CHANGE TO ERROR HANDLING
         return None
 
 def standardize_address(df):
@@ -129,6 +135,7 @@ def process_csv_files(csv_file):
     """
     Calls the standardize_name and standardize_address functions with the provided file paths.
     """
+    # TODO: Import CSV before calling standardize_name here or import CSV in main
     print("Processing name CSV file:")
     updated_df = standardize_name(csv_file)
     print("Processing address CSV file:")
