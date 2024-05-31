@@ -1,5 +1,6 @@
 """
 Handle data transformation for Call the Car manifest CSV files
+Manipulate the pandas dataframe object of the imported CSV file
 """
 
 
@@ -12,7 +13,11 @@ def extract_wait_time_and_oxygen(comment):
     Returns wait time and oxygen
     Receives comment
     """
-    # TODO: set origin comment to make lines 26 & 29 case insensitve without breaking regex pattern
+    # TODO: change function parameter to dataframe object. will need to modify tests.py
+    # TODO: append wait_time and oxygen to new columns in dataframe
+    # TODO: set origin comment to make lines 26 & 29 case insensitive without
+    #   breaking regex pattern
+    
     # Define the pattern to match
     pattern = r"Wait time:\s*(\d+)\s*minutes(?:.*?\b(\d+)\s*(?:liter|liters|LPM|L|lts|LITERS|lt|l)\b)?"
 
@@ -71,11 +76,11 @@ def standardize_name(file_path):
         output_folder = "output"
         os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
 
-        # # Specify the path where you want to save the updated CSV file
+        # Specify the path where you want to save the updated CSV file
         output_file_path = os.path.join(output_folder, "updated.csv")
 
         # Save the updated DataFrame to a new CSV file
-        df.to_csv(output_file_path, index=False)
+        # df.to_csv(output_file_path, index=False)
 
         print(f"Updated CSV file saved to {output_file_path}")
 
