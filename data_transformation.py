@@ -3,10 +3,10 @@ Handle data transformation for Call the Car manifest CSV files
 Manipulate the pandas dataframe object of the imported CSV file
 """
 
-
 import os
 import re
 import pandas as pd
+
 
 def extract_wait_time_and_oxygen(comment):
     """
@@ -17,7 +17,7 @@ def extract_wait_time_and_oxygen(comment):
     # TODO: append wait_time and oxygen to new columns in dataframe
     # TODO: set origin comment to make lines 26 & 29 case insensitive without
     #   breaking regex pattern
-    
+
     # Define the pattern to match
     pattern = r"Wait time:\s*(\d+)\s*minutes(?:.*?\b(\d+)\s*(?:liter|liters|LPM|L|lts|LITERS|lt|l)\b)?"
 
@@ -74,7 +74,9 @@ def standardize_name(file_path):
 
         # Specify the directory where you want to save the updated CSV file
         output_folder = "output"
-        os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
+        os.makedirs(
+            output_folder, exist_ok=True
+        )  # Create the directory if it doesn't exist
 
         # Specify the path where you want to save the updated CSV file
         output_file_path = os.path.join(output_folder, "updated.csv")
@@ -90,6 +92,7 @@ def standardize_name(file_path):
         # run stderror
         # TODO: CHANGE TO ERROR HANDLING
         return None
+
 
 def standardize_address(df):
     """
@@ -113,7 +116,7 @@ def standardize_address(df):
         "Origin Street": "PU Address",
         "Origin City": "PU City",
         "Origin State": "PU State",
-        "Origin Postal": "PU Zip"
+        "Origin Postal": "PU Zip",
     }
 
     # Rename the columns
@@ -125,7 +128,9 @@ def standardize_address(df):
 
     # Specify the directory where you want to save the updated CSV file
     output_folder = "output"
-    os.makedirs(output_folder, exist_ok=True)  # Create the directory if it doesn't exist
+    os.makedirs(
+        output_folder, exist_ok=True
+    )  # Create the directory if it doesn't exist
 
     # Specify the path where you want to save the updated CSV file
     output_file = os.path.join(output_folder, "updated.csv")
@@ -135,6 +140,7 @@ def standardize_address(df):
 
     print(f"CSV saved to {output_file}")
     return df
+
 
 def process_csv_files(csv_file):
     """
@@ -147,9 +153,9 @@ def process_csv_files(csv_file):
     updated_df = standardize_address(updated_df)
     return updated_df
 
+
 # Example usage:
 # process_csv_files("import/Download(via_Manifest)_16e15fa4-b454-4c30-8a76-2945bdff6d8c.csv")
-
 
 
 # test function for standardze_address

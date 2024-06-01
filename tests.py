@@ -1,6 +1,7 @@
 """
 Test cases
 """
+
 import unittest
 from data_transformation import extract_wait_time_and_oxygen
 

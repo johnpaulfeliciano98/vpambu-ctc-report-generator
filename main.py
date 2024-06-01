@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import data_transformation as dt
 
+
 def main():
     """
     main function
@@ -19,11 +20,11 @@ def main():
     # Check the structure and contents of the DataFrame
     print("Original DataFrame (standardize_name):")
     print(df.head())
-    print(df['Origin Comments'].loc[df.index[0]])
+    print(df["Origin Comments"].loc[df.index[0]])
 
     # Example how to access Origin Comments cell
-    # 
-    origin_comments = df['Origin Comments'].loc[df.index[0]]
+    #
+    origin_comments = df["Origin Comments"].loc[df.index[0]]
     print(dt.extract_wait_time_and_oxygen(origin_comments))
 
     # Run standardize_name and standardize_address
