@@ -29,7 +29,8 @@ def main():
         "\n",
     )
 
-    # Run standardize_name and standardize_address
+    # Create and populate "Patient Name" column and return the df to standardize_address()
+    #   to update "Origin" column names to "PU"
     df = dt.standardize_address(dt.standardize_name(df))
 
     # Verify column values have been updated
