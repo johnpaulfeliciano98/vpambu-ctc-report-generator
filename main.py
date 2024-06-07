@@ -16,25 +16,23 @@ def main():
     file_path = "import/Download(via_Manifest)_16e15fa4-b454-4c30-8a76-2945bdff6d8c.csv"
     # Load the CSV file into a DataFrame
     df = pd.read_csv(file_path, index_col=False)
+    print("Original Dataframe")
+    print(df)
 
-    # Check the structure and contents of the DataFrame
-    print("Original DataFrame:\n", df.head(), "\n")
+    print("Extracted Origin Comments:")
+    print(df["Origin Comments"])
 
-    # Example how to access Origin Comments cell
-    origin_comments = df["Origin Comments"].loc[df.index[0]]
-    print("Extracted Origin Comment:\n", origin_comments)
-    print(
-        "Extracted [wait_time, oxygen]:",
-        dt.extract_wait_time_and_oxygen(origin_comments),
-        "\n",
-    )
-
+    # Extract Wait Time and Oxygen from Origin Comments
+    df = dt.process_comments(df)
+    print("Extracted Wait Time and Oxygen:")
+    print(df[["Trip ID", "Origin Comments", "Wait Time", "Oxygen"]])
     # Create and populate "Patient Name" column and return the df to standardize_address()
     #   to update "Origin" column names to "PU"
     df = dt.standardize_address(dt.standardize_name(df))
 
-    # Verify column values have been updated
-    print("Verify updated columns\n", df.columns.values, "\n")
+    # Verify column values have been updated and print the entire dataframe
+    with pd.option_context("display.max_rows", None, "display.max_columns", None):
+        print(df)
 
     # Specify the directory where you want to save the updated CSV file
     output_folder = "output"
