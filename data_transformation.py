@@ -7,9 +7,6 @@ import re
 import pandas as pd
 
 
-# TODO: change function parameter to dataframe object. will need to modify tests.py
-
-
 def extract_wait_time_and_oxygen(comment):
     """
     Returns wait time and oxygen from a single comment string.
