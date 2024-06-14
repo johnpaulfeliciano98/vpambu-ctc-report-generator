@@ -60,7 +60,7 @@ def standardize_name(df):
         )
 
         # Display the first few rows of the updated DataFrame to verify the changes
-        print("Updated DataFrame (standardize_name):\n", df, "\n")
+        # print("Updated DataFrame (standardize_name):\n", df, "\n")
 
         return df
     else:
@@ -78,8 +78,25 @@ def standardize_address(df):
     Receives a CSV file path, reads it into a DataFrame, renames the columns,
     and saves the updated DataFrame to an output CSV file.
     """
+    # Create new column "Pickup Address" for the merged dataframe
+    required_columns = ["Origin Street", "Origin City", "Origin State", "Origin Postal"]
 
-    # Define column mapping
+    if all(column in df.columns for column in required_columns):
+        # Convert columns to string type to avoid .str accessor issues
+        for column in required_columns:
+            df[column] = df[column].astype(str).str.strip()
+
+        # Create a new "Pick Up Address" column
+        df["Pick Up Address"] = (
+            df["Origin Street"]
+            + ", "
+            + df["Origin City"]
+            + ", "
+            + df["Origin State"]
+            + ", "
+            + df["Origin Postal"]
+        )
+    # Define column mapping to compare PU Address between traumasoft and ctc dataframes
     column_mapping = {
         "Origin Street": "PU Address",
         "Origin City": "PU City",
@@ -87,10 +104,8 @@ def standardize_address(df):
         "Origin Postal": "PU Zip",
     }
 
-    # Rename the columns
     df = df.rename(columns=column_mapping)
+    return df
 
     # Print the updated DataFrame (for debugging purposes)
-    print("Updated DataFrame (standardize_address):\n", df, "\n")
-
-    return df
+    # print("Updated DataFrame (standardize_address):\n", df, "\n")
