@@ -1,5 +1,4 @@
 """
-Handle data transformation for Call the Car manifest CSV files
 Manipulate the pandas dataframe object of the imported CSV file
 """
 
@@ -79,11 +78,20 @@ def standardize_address(df):
     and saves the updated DataFrame to an output CSV file.
     """
     # Create new column "Pickup Address" for the merged dataframe
-    required_columns = ["Origin Street", "Origin City", "Origin State", "Origin Postal"]
+    pickup_required_columns = [
+        "Origin Street",
+        "Origin City",
+        "Origin State",
+        "Origin Postal",
+        "Destination Street",
+        "Destination City",
+        "Destination State",
+        "Destination Postal",
+    ]
 
-    if all(column in df.columns for column in required_columns):
+    if all(column in df.columns for column in pickup_required_columns):
         # Convert columns to string type to avoid .str accessor issues
-        for column in required_columns:
+        for column in pickup_required_columns:
             df[column] = df[column].astype(str).str.strip()
 
         # Create a new "Pick Up Address" column
@@ -96,6 +104,18 @@ def standardize_address(df):
             + ", "
             + df["Origin Postal"]
         )
+
+        # Create a new "Drop Off Address" column
+        df["Drop Off Address"] = (
+            df["Destination Street"]
+            + ", "
+            + df["Destination City"]
+            + ", "
+            + df["Destination State"]
+            + ", "
+            + df["Destination Postal"]
+        )
+
     # Define column mapping to compare PU Address between traumasoft and ctc dataframes
     column_mapping = {
         "Origin Street": "PU Address",

@@ -15,3 +15,6 @@ venv_windows/
 
 # ignore ALL files named .python-version
 .python-version
+
+# ignore ALL files named .pseudocode
+.pseudocode
