@@ -5,7 +5,6 @@ output/
 # ignore ALL files in ANY directory named __pycache__
 __pycache__/
 
-
 # ignore ALL files in ANY python virtualenv directories
 venv/
 venv_windows/
@@ -15,6 +14,3 @@ venv_windows/
 
 # ignore ALL files named .python-version
 .python-version
-
-# ignore ALL files named .pseudocode
-.pseudocode
