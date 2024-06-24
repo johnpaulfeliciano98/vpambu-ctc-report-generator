@@ -1,6 +1,32 @@
 """
 Authors: John Paul Feliciano, Rodrigo Andaya Jr
 Project: Viewpoint Ambulance Call the Car Report Generator
+
+Main script to process and merge data from two CSV files and generate a report.
+
+This script performs the following steps:
+1. Loads two CSV files containing data from Traumasoft and Call the Car.
+2. Cleans Traumasoft data by removing trailing NaN rows based on the 'Run #' column.
+3. Extracts wait time (in minutes) and oxygen requirement from the 'Origin Comments' column
+   in the Call the Car DataFrame.
+4. Standardizes address columns and creates combined address columns in the Call the Car DataFrame.
+5. Normalizes address formats in both DataFrames.
+6. Merges the two DataFrames on 'Patient Name', 'Date of Service', and 'PU Address'.
+7. Selects specific columns of interest for the merged DataFrame.
+8. Saves the merged DataFrame to a CSV file in the specified output directory.
+
+The output CSV file contains the merged data with selected columns necessary for generating reports.
+
+Requirements:
+- pandas
+- data_transformation (imported as dt)
+
+Usage:
+Ensure that the input CSV file paths are correctly specified in the script before running.
+The merged CSV file will be saved in the 'output' directory.
+
+Returns:
+None
 """
 
 import os
@@ -10,19 +36,11 @@ import data_transformation as dt
 
 def main():
     """
-    Main function to process and merge data from two CSV files.
+    Executes data processing and report generation.
 
-    This function performs the following steps:
-    1. Loads two CSV files into pandas DataFrames.
-    2. Removes trailing NaN rows from the Traumasoft DataFrame.
-    3. Extracts wait time and oxygen information from the 'Origin Comments' column in the Call the Car DataFrame.
-    4. Standardizes the address columns and creates combined address columns in the Call the Car DataFrame.
-    5. Normalizes the address format in both DataFrames.
-    6. Merges the two DataFrames on 'Patient Name', 'Date of Service', and 'PU Address'.
-    7. Retains specific columns in the merged DataFrame.
-    8. Saves the merged DataFrame to a CSV file in the specified output directory.
-
-    The output CSV file contains the merged data with selected columns.
+    This function orchestrates the entire data processing workflow,
+    including loading, cleaning, merging, and saving data from Traumasoft
+    and Call the Car CSV files to generate a consolidated report.
 
     Args:
         None
@@ -44,7 +62,6 @@ def main():
     ts_df = dt.remove_trailing_nan_rows(ts_df, "Run #")
 
     # Extract Wait Time and Oxygen from Origin Comments
-    # ctc_df = dt.process_comments(ctc_df)
     ctc_df[["Wait Time", "Oxygen"]] = ctc_df["Origin Comments"].apply(
         lambda x: pd.Series(dt.extract_wait_time_and_oxygen(x))
     )

@@ -1,9 +1,28 @@
 """
-Manipulate the pandas dataframe object of the imported CSV file
+Utilities for manipulating dataframes and normalizing addresses.
+
+Functions:
+- remove_trailing_nan_rows(df, column_name):
+    Removes rows from a dataframe starting from the first row where the specified
+    column has NaN values.
+
+- extract_wait_time_and_oxygen(comment):
+    Extracts wait time in minutes and oxygen volume in liters from a comment string.
+
+- standardize_name(df):
+    Combines 'First Name' and 'Last Name' into 'Patient Name' in the DataFrame.
+
+- standardize_address(df):
+    Standardizes address columns and creates new combined address columns in the DataFrame.
+
+- normalize_address(address):
+    Normalizes an address and returns the first line of the normalized address.
+
+- normalize_and_concatenate_address(address):
+    Normalizes an address and concatenates its components into a single string.
 """
 
 import re
-import pandas as pd
 from scourgify import normalize_address_record
 
 
@@ -76,17 +95,6 @@ def extract_wait_time_and_oxygen(comment):
     return wait_time, oxygen
 
 
-def process_comments(df):
-    """
-    Apply the extract_wait_time_and_oxygen function to each row in the column "Origin Comments"
-    """
-    df[["Wait Time", "Oxygen"]] = df["Origin Comments"].apply(
-        lambda x: pd.Series(extract_wait_time_and_oxygen(x))
-    )
-    return df
-
-
-# TODO: modify to implement error handling
 def standardize_name(df):
     """
     Combines 'First Name' and 'Last Name' into 'Patient Name' in the DataFrame.
@@ -104,20 +112,21 @@ def standardize_name(df):
         None if the required columns are not found.
     """
 
-    # Check if "First Name" and "Last Name" columns exist in the DataFrame
-    if "First Name" in df.columns and "Last Name" in df.columns:
-        # Create a new "Patient Name" column combining "Last Name" and "First Name"
-        df["Patient Name"] = (
-            df["Last Name"].str.strip() + ", " + df["First Name"].str.strip()
-        )
+    try:
+        # Check if "First Name" and "Last Name" columns exist in the DataFrame
+        if "First Name" in df.columns and "Last Name" in df.columns:
+            # Create a new "Patient Name" column combining "Last Name" and "First Name"
+            df["Patient Name"] = (
+                df["Last Name"].str.strip() + ", " + df["First Name"].str.strip()
+            )
 
-        # Display the first few rows of the updated DataFrame to verify the changes
-        # print("Updated DataFrame (standardize_name):\n", df, "\n")
+            return df
 
-        return df
-    else:
-        print("Columns 'First Name' and 'Last Name' are not found in the CSV file.")
-        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        # Optionally, you could return None or raise the error again depending on your needs.
+        # return None
+        raise
 
 
 def standardize_address(df):
@@ -135,7 +144,6 @@ def standardize_address(df):
     Returns:
         pd.DataFrame: The updated DataFrame with renamed columns and new combined address columns.
     """
-    # Create new column "Pickup Address" for the merged dataframe
     pickup_required_columns = [
         "Origin Street",
         "Origin City",
@@ -147,7 +155,14 @@ def standardize_address(df):
         "Destination Postal",
     ]
 
-    if all(column in df.columns for column in pickup_required_columns):
+    try:
+        # Check for required columns
+        missing_columns = [
+            col for col in pickup_required_columns if col not in df.columns
+        ]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+
         # Convert columns to string type to avoid .str accessor issues
         for column in pickup_required_columns:
             df[column] = df[column].astype(str).str.strip()
@@ -174,15 +189,22 @@ def standardize_address(df):
             + df["Destination Postal"]
         )
 
-    # Define column mapping to compare PU Address between traumasoft and ctc dataframes
-    column_mapping = {
-        "Origin Street": "PU Address",
-        "Origin City": "PU City",
-        "Origin State": "PU State",
-        "Origin Postal": "PU Zip",
-    }
+        # Define column mapping to compare PU Address between traumasoft and ctc dataframes
+        column_mapping = {
+            "Origin Street": "PU Address",
+            "Origin City": "PU City",
+            "Origin State": "PU State",
+            "Origin Postal": "PU Zip",
+        }
 
-    df = df.rename(columns=column_mapping)
+        df = df.rename(columns=column_mapping)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        # Optionally, you could return None or raise the error again depending on your needs.
+        # return None
+        raise
+
     return df
 
     # Print the updated DataFrame (for debugging purposes)
