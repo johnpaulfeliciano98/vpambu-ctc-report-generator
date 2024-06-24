@@ -6,33 +6,48 @@ Project: Viewpoint Ambulance Call the Car Report Generator
 import os
 import pandas as pd
 import data_transformation as dt
-from scourgify import normalize_address_record
-import numpy as np
 
 
 def main():
     """
-    main function
+    Main function to process and merge data from two CSV files.
+
+    This function performs the following steps:
+    1. Loads two CSV files into pandas DataFrames.
+    2. Removes trailing NaN rows from the Traumasoft DataFrame.
+    3. Extracts wait time and oxygen information from the 'Origin Comments' column in the Call the Car DataFrame.
+    4. Standardizes the address columns and creates combined address columns in the Call the Car DataFrame.
+    5. Normalizes the address format in both DataFrames.
+    6. Merges the two DataFrames on 'Patient Name', 'Date of Service', and 'PU Address'.
+    7. Retains specific columns in the merged DataFrame.
+    8. Saves the merged DataFrame to a CSV file in the specified output directory.
+
+    The output CSV file contains the merged data with selected columns.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
-    ts_path = "import/dispatch_trip_list_short_2024-04-04_161848_527.csv"
+    ts_path = "input/dispatch_trip_list_short_2024-04-04_161848_527.csv"
     ctc_file_path = (
-        "import/Download(via_Manifest)_16e15fa4-b454-4c30-8a76-2945bdff6d8c.csv"
+        "input/Download(via_Manifest)_16e15fa4-b454-4c30-8a76-2945bdff6d8c.csv"
     )
 
     # Load the CSV files into dataframes
     ctc_df = pd.read_csv(ctc_file_path, index_col=False)
     ts_df = pd.read_csv(ts_path, index_col=False)
 
-    # TODO: move this to data_transformation.py
-    # Find the index of the first row in ts_df where "Run #" is NaN
-    first_nan_index = ts_df[ts_df["Run #"].isna()].index[0]
-
-    # Drop all rows from the first NaN row to the end
-    ts_df = ts_df.iloc[:first_nan_index]
+    # Remove Traumasoft report summary from dataframe
+    ts_df = dt.remove_trailing_nan_rows(ts_df, "Run #")
 
     # Extract Wait Time and Oxygen from Origin Comments
-    ctc_df = dt.process_comments(ctc_df)
+    # ctc_df = dt.process_comments(ctc_df)
+    ctc_df[["Wait Time", "Oxygen"]] = ctc_df["Origin Comments"].apply(
+        lambda x: pd.Series(dt.extract_wait_time_and_oxygen(x))
+    )
 
     # Create and populate "Patient Name" column and return the df to standardize_address()
     #   to update "Origin" column names to "PU"
@@ -41,53 +56,18 @@ def main():
     # Ensure 'PU Address' column is treated as strings
     ts_df["PU Address"] = ts_df["PU Address"].astype(str).str.strip()
 
-    # Function to normalize an address and return only the "address_line_1"
-    def normalize_address(address):
-        try:
-            # Normalize the address
-            normalized = normalize_address_record(address)
-            # Return only the "address_line_1" value
-            return normalized.get("address_line_1")
-        except Exception as e:
-            # Handle errors in address normalization
-            print(f"Error normalizing address {address}: {e}")
-            return None
-
-    # Function to normalize an address and concatenate it into a single string
-    def normalize_and_concatenate_address(address):
-        try:
-            # Normalize the address
-            normalized = normalize_address_record(address)
-            # Concatenate the address components into a single string
-            normalized_address = ", ".join(
-                filter(
-                    None,
-                    [
-                        normalized.get("address_line_1"),
-                        normalized.get("address_line_2"),
-                        normalized.get("city"),
-                        normalized.get("state"),
-                        normalized.get("postal_code"),
-                    ],
-                )
-            )
-            return normalized_address
-        except Exception as e:
-            # Handle errors in address normalization
-            print(f"Error normalizing address {address}: {e}")
-            return None
-
     # Normalize address format in the dataframes
-    ts_df["PU Address"] = ts_df["PU Address"].apply(normalize_address)
-    ctc_df["PU Address"] = ctc_df["PU Address"].apply(normalize_address)
+    ts_df["PU Address"] = ts_df["PU Address"].apply(dt.normalize_address)
+    ctc_df["PU Address"] = ctc_df["PU Address"].apply(dt.normalize_address)
     ctc_df["Drop Off Address"] = ctc_df["Drop Off Address"].apply(
-        normalize_and_concatenate_address
+        dt.normalize_and_concatenate_address
     )
     ctc_df["Pick Up Address"] = ctc_df["Pick Up Address"].apply(
-        normalize_and_concatenate_address
+        dt.normalize_and_concatenate_address
     )
 
-    # Inner Join Traumasoft and Call the Car dataframes on Patient Name, Date of Service and Pickup Address
+    # Inner Join Traumasoft and Call the Car dataframes on
+    # Patient Name, Date of Service and Pickup Address
     merged_df = pd.merge(
         ts_df,
         ctc_df,
@@ -124,10 +104,6 @@ def main():
             # Comment
         ]
     ]
-
-    # Verify column values have been updated and print the entire dataframe
-    # with pd.option_context("display.max_rows", None, "display.max_columns", None):
-    #     print(ctc_df)
 
     # Specify the directory where you want to save the updated CSV file
     output_folder = "output"
