@@ -30,24 +30,15 @@ def remove_trailing_nan_rows(df, column_name):
     """
     Removes all rows starting from the first row where the specified column has NaN values.
 
-    This function searches for the first occurrence of NaN in the specified column
-    and removes that row and all subsequent rows from the DataFrame.
-
     Args:
         df (pd.DataFrame): The DataFrame to be cleaned.
         column_name (str): The name of the column to check for NaN values.
 
     Returns:
-        pd.DataFrame: The cleaned DataFrame without trailing rows that contain NaN
-        in the specified column.
-
-    Raises:
-        IndexError: If there are no NaN values in the specified column.
+        pd.DataFrame: The cleaned DataFrame without trailing rows that contain
+        NaN in the specified column.
     """
-    # Find the index of the first row where the specified column is NaN
     first_nan_index = df[df[column_name].isna()].index[0]
-
-    # Drop all rows from the first NaN row to the end
     cleaned_df = df.iloc[:first_nan_index]
 
     return cleaned_df
@@ -71,24 +62,20 @@ def extract_wait_time_and_oxygen(comment):
             - oxygen (int or None): The extracted oxygen volume in liters. If not found and
               specific keywords are present, returns None. Otherwise, returns 0.
     """
-    # Define the patterns to match wait time and oxygen separately
+    # Define patterns to match wait time and oxygen
     wait_time_pattern = r"Wait time:\s*(\d+)\s*minutes"
     oxygen_pattern = r"(\d+)\s*(?:liter|liters|LPM|L|lts|LITERS|lt|l)\b"
 
-    # Search for wait time in the comment
     wait_time_match = re.search(wait_time_pattern, comment, re.IGNORECASE)
     wait_time = int(wait_time_match.group(1)) if wait_time_match else 0
 
-    # Search for oxygen in the comment
     oxygen_match = re.search(oxygen_pattern, comment, re.IGNORECASE)
     oxygen = int(oxygen_match.group(1)) if oxygen_match else 0
 
-    # Additional check for phrases that imply oxygen is required but not explicitly mentioned
-    if (
-        "Therapist REQ" in comment
-        or "Deep suction" in comment
-        or "Vent" in comment
-        or "tracheostomy" in comment
+    # Check for phrases implying oxygen requirement
+    if any(
+        keyword in comment
+        for keyword in ["Therapist REQ", "Deep suction", "Vent", "tracheostomy"]
     ):
         oxygen = oxygen if oxygen else None
 
@@ -113,9 +100,7 @@ def standardize_name(df):
     """
 
     try:
-        # Check if "First Name" and "Last Name" columns exist in the DataFrame
         if "First Name" in df.columns and "Last Name" in df.columns:
-            # Create a new "Patient Name" column combining "Last Name" and "First Name"
             df["Patient Name"] = (
                 df["Last Name"].str.strip() + ", " + df["First Name"].str.strip()
             )
@@ -167,7 +152,7 @@ def standardize_address(df):
         for column in pickup_required_columns:
             df[column] = df[column].astype(str).str.strip()
 
-        # Create a new "Pick Up Address" column
+        # Create new address columns
         df["Pick Up Address"] = (
             df["Origin Street"]
             + ", "
@@ -178,7 +163,6 @@ def standardize_address(df):
             + df["Origin Postal"]
         )
 
-        # Create a new "Drop Off Address" column
         df["Drop Off Address"] = (
             df["Destination Street"]
             + ", "
@@ -227,12 +211,9 @@ def normalize_address(address):
         None if normalization fails.
     """
     try:
-        # Normalize the address
         normalized = normalize_address_record(address)
-        # Return only the "address_line_1" value
         return normalized.get("address_line_1")
     except Exception as e:
-        # Handle errors in address normalization
         print(f"Error normalizing address {address}: {e}")
         return None
 
@@ -254,9 +235,7 @@ def normalize_and_concatenate_address(address):
         str: The normalized and concatenated address string, or None if normalization fails.
     """
     try:
-        # Normalize the address
         normalized = normalize_address_record(address)
-        # Concatenate the address components into a single string
         normalized_address = ", ".join(
             filter(
                 None,
@@ -271,6 +250,5 @@ def normalize_and_concatenate_address(address):
         )
         return normalized_address
     except Exception as e:
-        # Handle errors in address normalization
         print(f"Error normalizing address {address}: {e}")
         return None
