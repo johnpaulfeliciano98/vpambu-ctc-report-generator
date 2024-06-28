@@ -85,33 +85,61 @@ def main():
         how="inner",
     )
 
-    # TODO: Deal with constant values and columns without program generated content
+    merged_df["At Scene"] = pd.to_datetime(merged_df["At Scene"])
+    merged_df["At Destination"] = pd.to_datetime(merged_df["At Destination"])
+
+    # Create "At Scene Date" and "At Scene Time" columns
+    merged_df["Actual Pickup Arrival Date"] = merged_df["At Scene"].dt.date
+    merged_df["Actual Pickup Arrival Time"] = merged_df["At Scene"].dt.time
+    merged_df["Actual Drop off Arrival Date"] = merged_df["At Destination"].dt.date
+    merged_df["Actual Drop off Arrival Time"] = merged_df["At Destination"].dt.time
+
+    merged_df["CTC Trip ID"] = merged_df["Trip ID"]
+    merged_df["Member Last Name"] = merged_df["Last Name"]
+    merged_df["Member First Name"] = merged_df["First Name"]
+    merged_df["Requested Arrival Time"] = merged_df["Pickup Time_y"]
+    merged_df["Level of Service"] = merged_df["LOS_y"]
+    merged_df["Driver Name"] = merged_df["Crew"]
+    merged_df["Driver License Number"] = merged_df["Driver's License"]
+    merged_df["Vehicle VIN"] = merged_df["VIN"]
+    merged_df["Trip Status"] = merged_df["Status_x"]
+    merged_df["Mileage"] = merged_df["Miles"]
+    merged_df["Wait Time Minutes"] = merged_df["Wait Time"]
+    merged_df["Oxygen Provided"] = merged_df["Oxygen"]
+
+    merged_df["Vendor Name"] = "vpambu"
+    merged_df["Vendor Tax ID"] = "1234567890"
+    merged_df["Total Cost"] = ""
+    merged_df["Comment"] = ""
+
     # Retain specific columns in the merged DataFrame
     desired_columns = [
-        # Vendor Name “Viewpoint Ambulance Inc.”
-        # Vendor Tax ID “47-2166204”
-        "Trip ID",  # CTC Trip ID
-        "Date of Service",  # Date of Service
-        "Last Name",  # Member Last Name
-        "First Name",  # Member First Name
-        "Pick Up Address",  # Pick Up Address “Street, City, State, Postal”
-        "Drop Off Address",  # Drop Off Address
-        "Pickup Time_y",  # Requested Arrival Time
-        "Appointment Time",  # Appointment Time
-        "At Scene",  # Actual Pickup Arrival Date
-        "At Destination",  # Actual Pickup Arrival Time
-        "LOS_y",  # Level of Service
-        "At Destination",  # Actual Drop off Arrival Date
-        "Crew",  # Driver Name
-        "Driver's License",  # Driver License Number
-        "VIN",  # Vehicle VIN
-        "Status_x",  # Trip Status “COMPLETE”
-        "Mileage",  # Miles
-        "Wait Time",  # Wait Time Minutes
-        "Oxygen",  # Oxygen Provided
-        # Total Cost
-        # Comment
+        "Vendor Name",
+        "Vendor Tax ID",
+        "CTC Trip ID",
+        "Date of Service",
+        "Member Last Name",
+        "Member First Name",
+        "Pick Up Address",
+        "Drop Off Address",
+        "Requested Arrival Time",
+        "Appointment Time",
+        "Actual Pickup Arrival Date",
+        "Actual Pickup Arrival Time",
+        "Actual Drop off Arrival Date",
+        "Actual Drop off Arrival Time",
+        "Level of Service",
+        "Driver Name",
+        "Driver's License",
+        "Vehicle VIN",
+        "Trip Status",
+        "Miles",
+        "Wait Time Minutes",
+        "Oxygen Provided",
+        "Total Cost",
+        "Comment",
     ]
+
     merged_df = merged_df[desired_columns]
 
     # Save the merged DataFrame to the output file

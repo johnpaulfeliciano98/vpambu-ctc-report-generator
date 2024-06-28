@@ -191,9 +191,6 @@ def standardize_address(df):
 
     return df
 
-    # Print the updated DataFrame (for debugging purposes)
-    # print("Updated DataFrame (standardize_address):\n", df, "\n")
-
 
 def normalize_address(address):
     """
