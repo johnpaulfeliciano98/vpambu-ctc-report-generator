@@ -23,7 +23,37 @@ Functions:
 """
 
 import re
+import os
 from scourgify import normalize_address_record
+
+
+def file_input():
+    # import all files in "input" folder both ts and ctc
+    # iterate through csv files in folder
+    # Address ts_path and ctc_file_path for multiple files
+    # Potential solution for ctc
+    # Import csv
+    # ctc files start with "Download..."
+    # Create first ctc_df
+    # Import second csv and append to ctc_df
+    # Ignore column headers
+    # Or find a way to import all files at once
+
+    # Potential solution for ts
+    # Import csv
+    # ts files start with "dispatch..."
+    # Create first ts_df
+    # Remove trailing NaN rows from ts_df
+    # Import second csv and append to ts_df
+    # Ignore column headers
+    # Remove trailing NaN rows from ts_df again
+
+    folder_path = "input"
+    files = os.listdir(folder_path)
+    print(files)
+
+    # return [ts_df, ctc_df]
+    return None
 
 
 def remove_trailing_nan_rows(df, column_name):
