@@ -3,7 +3,7 @@ Test cases
 """
 
 import unittest
-from data_transformation import extract_wait_time_and_oxygen
+from data_processing import extract_wait_time_and_oxygen
 
 
 class CommentExtractTest(unittest.TestCase):

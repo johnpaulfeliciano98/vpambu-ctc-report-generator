@@ -22,49 +22,59 @@ Requirements:
 - data_transformation (imported as dt)
 
 Usage:
-Ensure that the input CSV file paths are correctly specified in the script before running.
-The merged CSV file will be saved in the 'output' directory.
+    python main.py [parameters]
 
-Returns:
-None
+    Ensure that the input CSV file paths are correctly specified in the script before running.
+    The merged CSV file will be saved in the 'output' directory.
+
+Parameters:
+    sys.argv[1:]: List
+        Command-line arguments passed to the script.
+        Each argument represents a file or input.
+
+Example:
+    $ python main.py # This will automatically take all files from the input folder
+    $ python main.py file1.csv file2.csv
 """
 
 import os
+import sys
+
 import pandas as pd
-import data_transformation as dt
+from dotenv import load_dotenv
+import data_processing as dt
 
 
 def main():
     """
-    Executes data processing and report generation.
+    Entry point of the script.
 
-    This function orchestrates the entire data processing workflow,
-    including loading, cleaning, merging, and saving data from Traumasoft
-    and Call the Car CSV files to generate a consolidated report.
-
-    Args:
-        None
-
-    Returns:
-        None
+    Handles command-line arguments and performs operations based on them.
     """
 
-    # Paths to the input CSV files
-    ts_path = "input/dispatch_trip_list_short_2024-04-04_161848_527.csv"
-    ctc_file_path = (
-        "input/Download(via_Manifest)_16e15fa4-b454-4c30-8a76-2945bdff6d8c.csv"
-    )
+    load_dotenv()
 
-    # Load the CSV files into DataFrames
-    ctc_df = pd.read_csv(ctc_file_path, index_col=False)
-    ts_df = pd.read_csv(ts_path, index_col=False)
+    # python main.py
+    if len(sys.argv) == 1:
+        # Import the entire input folder
+        print("Importing entire input folder")
+        input_df = dt.combine_csv_files("input")
+    else:
+        # Import specific files
+        parameters = [f"{param}" for param in sys.argv[1:]]
+        print("Parameters:", parameters)
+        input_df = dt.combine_csv_files(parameters)
+
+    ctc_df = input_df[0]
+    ts_df = input_df[1]
 
     # Data cleaning and transformation for Traumasoft DataFrame
-    ts_df = dt.remove_trailing_nan_rows(ts_df, "Run #")
+    ts_df["Date of Service"] = ts_df["Date of Service"].apply(dt.normalize_date)
     ts_df["PU Address"] = ts_df["PU Address"].astype(str).str.strip()
     ts_df["PU Address"] = ts_df["PU Address"].apply(dt.normalize_address)
 
     # Data extraction, transformation, and standardization for Call the Car DataFrame
+    ctc_df["Date of Service"] = ctc_df["Date of Service"].apply(dt.normalize_date)
     ctc_df[["Wait Time", "Oxygen"]] = ctc_df["Origin Comments"].apply(
         lambda x: pd.Series(dt.extract_wait_time_and_oxygen(x))
     )
@@ -76,6 +86,12 @@ def main():
     ctc_df["Drop Off Address"] = ctc_df["Drop Off Address"].apply(
         dt.normalize_and_concatenate_address
     )
+
+    # For debugging, output the processed dataframes to separate files
+    # with open("processed_ts_df.txt", "w", encoding="utf-8") as f:
+    #     print("Filename:", ts_df.to_string(), file=f)
+    # with open("processed_ctc_df.txt", "w", encoding="utf-8") as f:
+    #     print("Filename:", ctc_df.to_string(), file=f)
 
     # Merge the DataFrames on 'Patient Name', 'Date of Service', and 'PU Address'
     merged_df = pd.merge(
@@ -107,8 +123,9 @@ def main():
     merged_df["Wait Time Minutes"] = merged_df["Wait Time"]
     merged_df["Oxygen Provided"] = merged_df["Oxygen"]
 
-    merged_df["Vendor Name"] = "vpambu"
-    merged_df["Vendor Tax ID"] = "1234567890"
+    # Constant values in merged dataframe
+    merged_df["Vendor Name"] = os.getenv("VENDOR_NAME")
+    merged_df["Vendor Tax ID"] = os.getenv("VENDOR_TAX_ID")
     merged_df["Total Cost"] = ""
     merged_df["Comment"] = ""
 
