@@ -1,8 +1,15 @@
+"""
+Test cases
+"""
+
 import unittest
-from data_transformation import extract_wait_time_and_oxygen
+from data_processing import extract_wait_time_and_oxygen
 
 
 class CommentExtractTest(unittest.TestCase):
+    """
+    Validate Wait time and oxygen values extracted from CTC origin comments
+    """
 
     # Test with wait time present but not liters
     def test1(self):
@@ -63,6 +70,7 @@ class CommentExtractTest(unittest.TestCase):
     def test11(self):
         input = "Wait time: 90 minutes//Oxygen 1L Deep suction /Height 5'4  Weight 147 lbs. DX- respiratory failure// Oxygen//Wait4Return//Deep suction//Resp Therapist REQ//Trach Tube//H: 5'4 W:147 lbs.\""
         expected = [90, 1]
+        self.assertEqual(extract_wait_time_and_oxygen(input), expected)
 
     # if text contains oxygen, set to 2
     def test12(self):
