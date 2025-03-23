@@ -21,9 +21,9 @@
   <a href="https://github.com/rjandaya/vpambu-ctc-report-generator">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
-  <h3 align="center">Viewpoint Ambulance Invoice Generator</h3>
+  <h3 align="center">Viewpoint Ambulance Billing Invoice Report Tool</h3>
   <p align="center">
-    Program that merges two unique datasets into a comprehensive report.
+    Program that merges data from two unique datasets into a comprehensive billing report.
   </p>
 </div>
 
@@ -53,14 +53,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project involves creating a main script to process and merge data from two CSV files to generate comprehensive reports. The script performs the following steps:
+This project involves creating a main script to process and merge data from two CSV files to generate comprehensive billing reports. The script performs the following steps:
 
-1. **Load Data**: Imports two CSV files containing data from Traumasoft and CallTheCar.
+1. **Load Data**: Imports two CSV files containing data from Traumasoft and Call the Car (CTC) records.
 2. **Clean Data**: Removes trailing NaN rows in Traumasoft data.
-3. **Extract Information**: Retrieves wait time and oxygen requirement from CallTheCar data.
+3. **Extract Information**: Retrieves wait time and oxygen requirement from Call the Car (CTC) data.
 4. **Standardize Addresses**: Normalizes address formats and creates combined address columns.
-5. **Merge Data**: Combines the data sets based on 'Patient Name', 'Date of Service', and 'PU Address'.
-6. **Select Columns**: Focuses on specific columns for the final report.
+5. **Merge Data**: Combines the datasets based on 'Patient Name', 'Date of Service', and 'PU Address'.
+6. **Select Columns**: Focuses on specific columns for the final billing report.
 7. **Save Output**: Exports the merged data to a CSV file in the output directory.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -105,18 +105,19 @@ To get started with this program, ensure you have <a href="https://www.python.or
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-First, copy all .csv files into the input directory.
+First, copy all `.csv` files into the `input` directory.
 
 Example:
 ```sh
 python main.py
 ```
-This will automatically take all files from the input directory.
+This will automatically process all files in the `input` directory.
 
+Or specify individual files:
 ```sh
 python main.py "file1.csv" "file2.csv"
 ```
-This will take only the specified files in the input directory. The final report will be saved to the output directory
+The final billing report will be saved to the `output` directory.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -133,13 +134,12 @@ Distributed under the GNU License. See `LICENSE.txt` for more information.
 Rodrigo Andaya Jr - rodrigoandayajr.cs@gmail.com  
 John Paul Feliciano - johnpaulfeliciano98@gmail.com
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Regular expression operations](https://docs.python.org/3/library/re.html)
+* [Regular Expression Operations](https://docs.python.org/3/library/re.html)
 * [Pandas](https://pandas.pydata.org/docs/)
 * [Scourgify](https://github.com/GreenBuildingRegistry/usaddress-scourgify)
 
@@ -148,12 +148,8 @@ John Paul Feliciano - johnpaulfeliciano98@gmail.com
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
 [contributors-url]: https://github.com/rjandaya/vpambu-ctc-report-generator/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/rjandaya/vpambu-ctc-report-generator?style=for-the-badge
-[forks-url]: https://github.com/rjandaya/vpambu-ctc-report-generator/network/members
 [stars-shield]: https://img.shields.io/github/stars/rjandaya/vpambu-ctc-report-generator?style=for-the-badge
 [stars-url]: https://github.com/rjandaya/vpambu-ctc-report-generator/stargazers
-[issues-shield]: https://img.shields.io/github/issues/rjandaya/vpambu-ctc-report-generator?style=for-the-badge
-[issues-url]: https://github.com/rjandaya/vpambu-ctc-report-generator/issues
 [license-shield]: https://img.shields.io/github/license/rjandaya/vpambu-ctc-report-generator?style=for-the-badge
 [license-url]: https://github.com/rjandaya/vpambu-ctc-report-generator/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
